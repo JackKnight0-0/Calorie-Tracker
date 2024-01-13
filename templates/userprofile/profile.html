@@ -1,0 +1,74 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}Profile | {{ user.username }}{% endblock title %}
+
+{% block head %}
+    <link type="text/css" rel="stylesheet" href="{% static 'css/profile_css.css' %}">
+{% endblock head %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img src="{{ user.user_profile.avatar.url }}" alt="User Avatar"
+                             class="img-fluid profile-avatar img-circle">
+                    </div>
+                    <div class="profile-username">{{ user.username }}</div>
+                </div>
+                <div class="profile-body">
+                    <div class="mb-3">
+                        <span class="profile-label">Email:</span>
+                        <p id="email" class="lead">{{ user.email|default:'...' }}</p>
+                    </div>
+                    {% if  not user.calorie_data %}
+                        <div class="mb-3">
+                            <a class="btn btn-primary" href="{% url 'setup_calorie_data' %}">Set Up calorie data</a>
+                        </div>
+                    {% else %}
+                        <div class="mb-3">
+                            <p>My allowed calorie:
+                                <b>{{ user.calorie_data.calorie_per_day }}</b></p>
+                        </div>
+                        <div class="mb-3">
+                            <a class="btn btn-success" href="{% url 'show_change_calorie_data' %}">My Calorie</a>
+                        </div>
+                    {% endif %}
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Change Avatar
+                    </button>
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Change Avatar</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body"
+                                     style="display: flex; justify-content: space-around; overflow: hidden">
+                                    <img src="{{ user.user_profile.avatar.url }}" alt="modal-avatar" id="pre-view"
+                                         width="200px" height="200px">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                    </button>
+                                    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+                                        {{ avatar_form.avatar }}
+                                        {% for error in avatar_form.avatar.errors %}
+                                            <p class="alert alert-danger">{{ error }}</p>
+                                        {% endfor %}
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

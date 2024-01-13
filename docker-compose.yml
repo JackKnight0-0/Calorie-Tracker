@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  web:
+    build: .
+    volumes:
+      - .:/CalorieTracker
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build: .
+    command: bash -c "celery -A django_project beat -l INFO & celery -A django_project worker -l INFO"
+    volumes:
+      - .:/CalorieTracker
+    environment:
+      - 'CELERY_BROKER_URL=redis://redis:6379/0'
+      - 'CELERY_RESULT_BACKEND=redis://redis:6379/0'
+    depends_on:
+      - web
+      - redis
+
+
+  redis:
+    image: 'redis:7.2.4-alpine'
+    ports:
+      - '6379:6379'
+
+  db:
+    image: 'postgres:16'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - 'POSTGRES_HOST_AUTH_METHOD=trust'
+
+volumes:
+  postgres_data:

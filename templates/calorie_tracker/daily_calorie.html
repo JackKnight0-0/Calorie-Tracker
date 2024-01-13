@@ -1,0 +1,59 @@
+{% extends '_base.html' %}
+
+{% block title %}My Daily Calorie{% endblock title %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h1>Calorie Tracker</h1>
+                <div class="mb-3">
+                    <label for="maxCalories" class="form-label">My daily calorie:</label>
+                    <p id="maxCaloriesValue"><b>{{ user.calorie_data.calorie_per_day }}</b></p>
+                </div>
+                <div class="mb-3">
+                    <label for="currentCalories" class="form-label">My today calories:</label>
+                    <p id="currentCaloriesValue"
+                            {% if user.calorie_data.calorie_per_day < today_calories.current_calorie %}
+                       class="alert alert-danger">You ate more calories today than you should have!:
+                            {% else %}
+                                >
+                            {% endif %}
+                    <b>{{ today_calories.current_calorie }}</b></p>
+                </div>
+                <a class="btn btn-primary" href="{% url 'show_change_calorie_data' %}">Update</a>
+            </div>
+
+            <div class="col-md-6">
+                <h2>Add food</h2>
+                <form method="post">{% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            {{ field.label }}
+                            {{ field }}
+                            {% for error in field.errors %}
+                                <p class="alert alert-danger">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <button class="btn btn-success" type="submit">Add food</button>
+
+                </form>
+
+                <h2 class="mt-4">List of food:</h2>
+                <ul id="foodList" class="list-group">
+                    {% for food in today_calories.foods.all %}
+                        <li class="list-group-item justify-content-between"
+                            style="display: flex; align-items: flex-end"><p class="m-2"><strong>{{ food.food }}</strong>: {{ food.calories }}
+                            ( Was
+                            added: {{ food.time_of_add|time }} )</p>
+                            <form method="post" action="{% url 'delete_food' food.pk %}">{% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Remove</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

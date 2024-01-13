@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+
+{% block title %}My Calorie Data{% endblock title %}
+
+
+{% block content %}
+    <div class="align-items-center justify-content-center flex-column" style="display: flex">
+        <h1>My Calorie Data</h1>
+        <p>Allowed per day: <h1>{{ user.calorie_data.calorie_per_day }}</h1></p>
+        <form method="post" class="form-control align-items-center justify-content-center flex-column"
+              style="display: flex;">{% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary">Change</button>
+        </form>
+    </div>
+{% endblock content %}
