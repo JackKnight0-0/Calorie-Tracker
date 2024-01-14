@@ -1,5 +1,5 @@
 from django import forms
-from .models import CustomUser
+from django.contrib.auth import get_user_model
 
 from allauth.account.forms import SignupForm, LoginForm, ChangePasswordForm, ResetPasswordForm, ResetPasswordKeyForm
 
@@ -18,8 +18,8 @@ class CustomSignUpForm(SignupForm):
     def clean_username(self):
         username = super().clean_username()
         try:
-            user = CustomUser.objects.get(username__icontains=username)
-        except CustomUser.DoesNotExist:
+            user = get_user_model().objects.get(username__icontains=username)
+        except get_user_model().DoesNotExist:
             return username
         self.add_error('username', f'User with username {username} already exist!')
 

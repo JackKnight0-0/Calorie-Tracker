@@ -8,8 +8,3 @@ from userprofile.models import UserProfile
 def create_user_profile(sender, instance, created, *args, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=get_user_model())
-def save_user_profile(sender, instance, *args, **kwargs):
-    instance.user_profile.save()
